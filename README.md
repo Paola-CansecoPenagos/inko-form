@@ -56,7 +56,7 @@ src/
    
    Editar `.env` con la URL del webhook:
    ```
-   VITE_N8N_WEBHOOK_URL=https://paolaacp.app.n8n.cloud/webhook-test/inko/form
+   VITE_N8N_WEBHOOK_URL=https://paolaacp.app.n8n.cloud/webhook/inko/form
    ```
 
 3. **Ejecutar en desarrollo**:
@@ -116,3 +116,88 @@ El formulario genera un payload JSON con esta estructura:
 - Material UI proporciona componentes accesibles por defecto
 - El tema está optimizado para uso profesional
 - Sin dependencias de backend (excepto el webhook para envío)
+
+## Retos que enfrenté
+
+### CORS entre Replit/Lovable y n8n Cloud
+
+El preflight OPTIONS fallaba en el endpoint webhook-test. Lo resolví activando el flujo y usando la Production URL (/webhook/...) + headers CORS (Access-Control-Allow-Origin/Methods/Headers).
+
+### Forma del payload en n8n
+
+El Webhook entrega los datos como json.body (o a veces raw string). Añadí una extracción robusta para soportar req.body, raíz o string JSON, evitando "Faltan campos…" falsos.
+
+### Salida del nodo de IA (variantes)
+
+Distintas versiones del nodo devolvían el contenido en message.content, response, text o choices[0]…. Implementé un merge/parse tolerante (limpia json … y BOM).
+
+### Contexto perdido en nodos posteriores
+
+Gmail se conectaba tras Sheets; el $json ya no traía el lead. Lo solucioné referenciando explícitamente el nodo Code1/Merge AI en las expresiones del email.
+
+### Legibilidad en Google Sheets
+
+El campo items_json era poco legible. Añadí items_resumen para humanos y propuse una hoja "Items" con 1 renglón por ítem (fan-out).
+
+### Formateo y redondeo de moneda
+
+Uniformé redondeo a 2 decimales y formateo es-MX (miles/decimales) en el correo para evitar confusiones.
+
+## ¿Qué mejoraría con más tiempo?
+
+### Robustez y calidad
+
+**Validación de esquema end-to-end**: ya valido en frontend con Zod; replicaría el mismo schema en n8n (Code) para defensa en profundidad y mensajes de error consistentes.
+
+**Idempotencia**: generar un lead_id (hash por email+timestamp) y evitar duplicados en Sheets si el usuario reintenta.
+
+**Reintentos y fallback**: si la IA falla o no devuelve JSON, degradar a "Medio" + copy por defecto y enviar igual la notificación; loguear para revisar.
+
+**Tests automatizados**:
+- Unit tests del cálculo (casos: lona 3×2×1.5, micro 5 m², PVC 2 m² mínimo, acrílico 1.2 m² + instalación).
+- Contract test del webhook con fixtures del LeadPayload.
+- E2E: disparo del form → n8n → Sheets → email → respuesta al cliente.
+
+**Observabilidad**: métricas de tiempo de respuesta, % fallos de IA, totales por material, conversión por canal. Alertas (Slack/Email) ante errores.
+
+### Seguridad y cumplimiento
+
+**CORS con whitelist** de dominios (no * en producción).
+
+**Anti-spam/abuso**: reCAPTCHA/Turnstile, rate limiting y validación de teléfono/email.
+
+**PII**: evitar loguear correos/teléfonos en mensajes de error; política de retención de datos; variables de entorno separadas por ambiente.
+
+**Webhooks firmados** o secreto compartido si abro el endpoint a más canales.
+
+### Datos y escalabilidad
+
+**Persistencia**: mantener Sheets (rápido para prototipo) pero planear migración a DB (Supabase/Airtable/Postgres) para concurrencia, búsqueda y reportes.
+
+**Desglose por ítem**: además del resumen, escribir cada ítem en una hoja Items para pivotes/dashboards.
+
+**Catálogo gestionable**: mover precios/materiales a una Sheet "Catálogo" o CMS ligero y leerlos desde n8n para no redeployar por cambios.
+
+### UX y canales
+
+**WhatsApp** (siguiente etapa del alcance): flujo n8n con Twilio/WhatsApp Cloud API simulando el agente:
+- "Descubrimiento" guiado (material → medidas → instalación → urgencia).
+- Cotización en vivo y clasificación IA en la misma conversación.
+
+**Respuesta al cliente**: además del correo a INKO, enviar confirmación al lead (email/WhatsApp) con su resumen y número de seguimiento.
+
+**Internacionalización/moneda**: bloquear MXN y formato es-MX, pero dejar lista la capa para i18n si crece.
+
+### Prompting y costos IA
+
+**Hardening del prompt**: reforzar el contrato JSON (sin texto extra), ejemplos positivos/negativos y penalizar alucinaciones.
+
+**Budget control**: logs de consumo y límites diarios por ambiente.
+
+**Función "clasificar sin contexto sensible"**: sólo enviar lo necesario a la IA (minimizar PII).
+
+### Entrega técnica
+
+**Infra por ambientes**: dev (webhook-test) y prod (webhook), variables .env distintas y checklists de despliegue.
+
+**Documentación**: diagrama del flujo, contratos de entrada/salida y guía de operación (cómo rotar claves, cómo cambiar catálogo, cómo ver fallas).
