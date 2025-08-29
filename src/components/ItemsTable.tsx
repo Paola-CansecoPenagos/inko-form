@@ -43,7 +43,7 @@ export const ItemsTable: React.FC<ItemsTableProps> = ({ control, watch, setValue
       if (item && item.piezas && item.ancho_m && item.alto_m) {
         const newM2 = calcItemM2(item.piezas, item.ancho_m, item.alto_m);
         if (item.m2 !== newM2) {
-          setValue(`items.${index}.m2`, newM2);
+          setValue(`items.${index}.m2`, newM2, { shouldTouch: true, shouldDirty: true, shouldValidate: true });
         }
       }
     });
@@ -118,7 +118,10 @@ export const ItemsTable: React.FC<ItemsTableProps> = ({ control, watch, setValue
                         size="small"
                         inputProps={{ min: 1, step: 1 }}
                         error={!!fieldState.error}
-                        onChange={(e) => field.onChange(parseInt(e.target.value) || 1)}
+                        onChange={(e) => {
+                          const value = parseInt(e.target.value) || 1;
+                          field.onChange(value);
+                        }}
                       />
                     )}
                   />
@@ -135,7 +138,10 @@ export const ItemsTable: React.FC<ItemsTableProps> = ({ control, watch, setValue
                         size="small"
                         inputProps={{ min: 0.1, step: 0.1 }}
                         error={!!fieldState.error}
-                        onChange={(e) => field.onChange(parseFloat(e.target.value) || 0.1)}
+                        onChange={(e) => {
+                          const value = parseFloat(e.target.value) || 0.1;
+                          field.onChange(value);
+                        }}
                       />
                     )}
                   />
@@ -152,7 +158,10 @@ export const ItemsTable: React.FC<ItemsTableProps> = ({ control, watch, setValue
                         size="small"
                         inputProps={{ min: 0.1, step: 0.1 }}
                         error={!!fieldState.error}
-                        onChange={(e) => field.onChange(parseFloat(e.target.value) || 0.1)}
+                        onChange={(e) => {
+                          const value = parseFloat(e.target.value) || 0.1;
+                          field.onChange(value);
+                        }}
                       />
                     )}
                   />
