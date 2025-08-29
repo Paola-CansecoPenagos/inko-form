@@ -39,8 +39,7 @@ src/
   │   ├── ItemsTable.tsx    # Tabla editable de ítems
   │   ├── SummaryPanel.tsx  # Panel de resumen de cotización
   │   └── ConsentText.tsx   # Checkbox de consentimiento
-  └── assets/
-      └── logo.png          # Logo de INKO
+ 
 ```
 
 ## Configuración
@@ -69,56 +68,6 @@ src/
    ```bash
    npm run build
    ```
-
-## Catálogo de materiales
-
-| Material | Precio por m² |
-|----------|---------------|
-| Lona Frontlit 13 oz | $120 MXN |
-| Vinil Adhesivo Brillante | $180 MXN |
-| Vinil Microperforado | $220 MXN |
-| PVC 3mm (rígido) | $250 MXN |
-| Acrílico 6mm | $400 MXN |
-
-## Reglas de negocio
-
-- **Base**: Suma de (m² × precio_material) para todos los ítems
-- **Instalación**: +$500 MXN (opcional)
-- **Urgencia 24h**: +30% sobre (Base + Instalación)
-- **Mínimo de orden**: $800 MXN
-- **Total**: `max(Base + Instalación + Urgencia, $800)`
-
-## Casos de prueba
-
-### 1. Ejemplo del enunciado
-**Configuración**: 3 lonas de 2×1.5 m, urgente, con instalación
-- 3 ítems × Lona Frontlit × 2m × 1.5m = 9 m²
-- Base: 9 × $120 = $1,080
-- Instalación: $500
-- Urgencia (+30%): $474
-- **Total: $2,054 MXN**
-
-### 2. Microperforado 5 m² sin urgencia
-**Configuración**: 1 ítem de 2.5×2 m de vinil microperforado
-- 1 × 2.5 × 2 = 5 m²
-- Base: 5 × $220 = $1,100
-- Sin instalación ni urgencia
-- **Total: $1,100 MXN**
-
-### 3. PVC 3mm 2 m² urgente
-**Configuración**: 1 ítem de 1.4×1.4 m de PVC, urgente
-- 1 × 1.4 × 1.4 ≈ 2 m²
-- Base: 2 × $250 = $500
-- Urgencia (+30%): $150
-- Subtotal: $650 → aplicar mínimo
-- **Total: $800 MXN** (por mínimo de orden)
-
-### 4. Acrílico 6mm 1.2 m² con instalación
-**Configuración**: 1 ítem de 1×1.2 m de acrílico, con instalación
-- 1 × 1 × 1.2 = 1.2 m²
-- Base: 1.2 × $400 = $480
-- Instalación: $500
-- **Total: $980 MXN**
 
 ## Payload de envío
 
@@ -158,19 +107,6 @@ El formulario genera un payload JSON con esta estructura:
   }
 }
 ```
-
-## Contacto
-
-- **Teléfono**: 55-6675-6094
-- **Email**: flavio@inkoimpresores.com
-- **Empresa**: INKO Impresores
-
-## Deploy en Replit
-
-1. Importar el repositorio en Replit
-2. Configurar la variable de entorno `VITE_N8N_WEBHOOK_URL`
-3. Ejecutar `npm install && npm run dev`
-4. La aplicación estará disponible en el puerto 8080
 
 ## Notas técnicas
 
