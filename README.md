@@ -1,5 +1,5 @@
 # INKO Impresores - Sistema de Cotización
-Inicio de proyecto: Viernes 28 de agosto de 2025 a las 7 pm - Termino de proyecto: Viernes 29 de agosto de 2025 a las 3:30 pm
+Inicio de proyecto: Jueves 28 de agosto de 2025 a las 7 pm - Termino de proyecto: Viernes 29 de agosto de 2025 a las 3:30 pm
 
 Una aplicación web React + Vite + TypeScript con Material UI para capturar leads y calcular cotizaciones en tiempo real para INKO Impresores.
 
