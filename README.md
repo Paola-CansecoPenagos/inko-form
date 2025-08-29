@@ -57,7 +57,7 @@ src/
    
    Editar `.env` con la URL del webhook:
    ```
-   VITE_N8N_WEBHOOK_URL=https://paolaacp.app.n8n.cloud/webhook/inko/form
+   VITE_N8N_WEBHOOK_URL
    ```
 
 3. **Ejecutar en desarrollo**:
